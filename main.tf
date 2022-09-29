@@ -30,36 +30,3 @@ locals {
   skip_visibility_timeout_check        = var.ignore_visibility_timeout || var.sqs.visibility_timeout_seconds == null
   effective_batching_window_in_seconds = var.maximum_batching_window_in_seconds == null ? 0 : var.maximum_batching_window_in_seconds
 }
-
-data "aws_iam_policy_document" "subscribe" {
-  count = var.disable_inline_policy_attachment ? 0 : 1
-  statement {
-    effect = "Allow"
-    actions = [
-      "sqs:ReceiveMessage",
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:ChangeMessageVisibility",
-    ]
-    resources = [var.sqs.arn]
-  }
-
-  # https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-key-management.html
-  dynamic "statement" {
-    for_each = var.sqs.kms_master_key_id != null && var.sqs.kms_master_key_id != "alias/aws/sqs" ? [var.sqs.kms_master_key_id] : []
-    content {
-      effect = "Allow"
-      actions = [
-        "kms:Decrypt",
-      ]
-      resources = [var.sqs.kms_master_key_id]
-    }
-  }
-}
-
-resource "aws_iam_role_policy" "subscribe" {
-  for_each = data.aws_iam_policy_document.subscribe
-
-  role   = var.lambda.role
-  policy = each.value.json
-}
