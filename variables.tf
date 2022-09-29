@@ -1,3 +1,8 @@
+variable "enabled" {
+  type    = bool
+  default = true
+}
+
 variable "sqs" {
   type = object({
     name                       = optional(string)

@@ -1,4 +1,5 @@
 resource "aws_lambda_event_source_mapping" "this" {
+  enabled          = var.enabled
   event_source_arn = var.sqs.arn
   function_name    = var.lambda.arn
 
