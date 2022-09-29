@@ -32,6 +32,7 @@ data "aws_arn" "role" {
 resource "aws_iam_role_policy" "subscribe" {
   count = var.disable_inline_policy_attachment ? 0 : 1
 
-  role   = data.aws_arn.role[count.index].resource
-  policy = data.aws_iam_policy_document.subscribe[count.index].json
+  role        = data.aws_arn.role[count.index].resource
+  name_prefix = "${coalesce(var.sqs.name_prefix, var.sqs.name)}-subscribe"
+  policy      = data.aws_iam_policy_document.subscribe[count.index].json
 }

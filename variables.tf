@@ -1,5 +1,7 @@
 variable "sqs" {
   type = object({
+    name                       = optional(string)
+    name_prefix                = optional(string)
     arn                        = string
     fifo_queue                 = optional(bool)
     kms_master_key_id          = optional(string)
