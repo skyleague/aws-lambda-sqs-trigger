@@ -26,6 +26,8 @@ resource "aws_lambda_event_source_mapping" "this" {
       error_message = "Invalid visibility timeout; should be at least >= lambda.timeout + maximum_batching_window_in_seconds + ${var.visibility_timeout_tolerance}."
     }
   }
+
+  depends_on = [aws_iam_role_policy.subscribe]
 }
 locals {
   skip_visibility_timeout_check        = var.ignore_visibility_timeout || var.sqs.visibility_timeout_seconds == null

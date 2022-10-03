@@ -28,11 +28,15 @@ data "aws_arn" "role" {
   count = var.disable_inline_policy_attachment ? 0 : 1
   arn   = var.lambda.role
 }
+locals {
+  role_parts = split("/", try(data.aws_arn.role[0].resource, ""))
+  role_name  = element(local.role_parts, length(local.role_parts) - 1)
+}
 
 resource "aws_iam_role_policy" "subscribe" {
   count = var.disable_inline_policy_attachment ? 0 : 1
 
-  role        = data.aws_arn.role[count.index].resource
+  role        = local.role_name
   name_prefix = "${coalesce(var.sqs.name_prefix, var.sqs.name)}-subscribe"
   policy      = data.aws_iam_policy_document.subscribe[count.index].json
 }
