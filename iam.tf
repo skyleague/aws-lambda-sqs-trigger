@@ -7,6 +7,7 @@ data "aws_iam_policy_document" "subscribe" {
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
       "sqs:ChangeMessageVisibility",
+      "sqs:GetQueueUrl",
     ]
     resources = [var.sqs.arn]
   }
